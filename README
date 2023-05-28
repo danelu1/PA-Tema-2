@@ -28,8 +28,6 @@ calculele finale, prin care este determinat rezultatul, sunt de asemenea realiza
 
 
 Problema2: Ferate
-Ideea de rezolvare a problemei mi-a fost impartasita(conceptual) de catre un coleg din grupa(nu toata ideea, doar faptul ca pot sa lucrez dupa ce determin componentele tari conexe,
-cu graful transpus, deoarece se fac mult mai usor verificarile necesare pentru determinarea numarului de cai ferate).
 Problema cere determinarea numarului de muchii ce trebuiesc adaugate grafului pentru a se putea ajunge de la nodul sursa(dat la intrare) la oricare alt nod din graf.
 Avand in vedere ca graful poate contine mai multe componente conexe, m-am gandit in prima faza sa determin toate componente tari conexe ale grafului, folosind codul pus la dispozitie
 de echipa de PA pentru algoritmul lui Kosaraju. O data determinate toate componentele tari conexe ale grafului, mi s-a parut destul de evident ca numarul de muchii ce trebuiesc
@@ -59,10 +57,6 @@ Ca si complexitate temporala, trebuie sa analizam pentru fiecare functie in part
     -> functia "getResult" genereaza o complexitate de O(m + n + n^2) in cel mai defavorabil caz, datorita apelului functiei "kosarajuScc" si a apelului de "n" ori a functiei
        "isNotConnected".
 In total, complexitatea temporala va fi O(m + n + n^2).
-
-
-Problema3: Teleportare
-Pentru "rezolvarea" acestei probleme am aplicat algoritmul lui Dijkstra preluat din laboratul de PA si am intors distanta de la nodul 1 la nodul "n".
 
 
 Problema4: Magazin
@@ -95,7 +89,3 @@ Functiile folosite in implementare sunt:
         destinatie), iar timpul de inceput al nodului de"start" este mai mic decat cel al nodului la care ajungem(prelucrarea incepe inaintea nodului destinatie).
 Ca si complexitate temporala, vom avea O(q + n), datorita intrebarilor la care vom incerca sa raspundem in timp constant si dfs-ului ce depinde de functia "explore", ce va parcurge
 toate nodurile o singura data si le va insemna ca fiind vizitate, pentru a nu ne mai intoarce sa facem alte calcule inutile si repetitive.
-
-REFERINTE:
-Dupa cum deja am mentionat mai sus, unii algoritmi sunt preluati din laborator/curs si modificati sau nemodificati, in functie de nevoie, iar ideea de a folosii graful transpus la
-cea de-a doua problema mi-a fost oferita de un coleg, pentru a usura anumite verificari.
