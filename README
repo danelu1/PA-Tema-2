@@ -1,0 +1,101 @@
+Problema1: Supercomputer
+Pentru rezolvarea acestei probleme am preluat codul pentru sortarea topologica folosind algoritmul lui Kahn din laboratorul 6 de "PA"(sau 7, nu stiu exact cum sunt numerotate),
+pe care l-am modificat pe baza nevoilor.
+Am considerat 2 vectori ce reprezinta gradele interne ale grafului(l-am considerat de 2 ori deoarece il voi modifica pe primul si voi avea nevoie de el in continuare) si un
+vector pentru codul fiecarui nod in parte(1 sau 2).
+Pentru implementarea problemei am folosit sortare topologica cu algoritmul lui Kahn. Mi-am dat seama ca trebuie folosita sortare topologica dearece se cerea ca anumite task-uri
+sa fie terminate inaintea altora, iar pentru a produce cat mai putine context switch-uri la final, m-am gandit ca cel mai bine ar fi sa parcurg mai intai toate task-urile
+ce incep cu oricare dintre cele 2 coduri, pe rand, pana cand acestea se epuizeaza, moment in care pot trece la cele cu codul celalalt(adica mai intai parcurg nodurile cu grad
+intern 0 si codul 1 din graf, dupa care care trec la cele cu grad intern 0 si codul 2, dupa cele cu grad intern 1 si codul 1, grad intern 1 si codul 2 si asa mai departe...).
+Repet acelasi rationament descris anterior si pentru cazul in care incep cu nodurile cu cod 2 si continui cu cele cu cod 1 pana le epuizez pe toate(nestiind care dintre cele
+2 e cel mai optim, le fac pe ambele si la final intorc minimul).
+Functiile folosite in implementare sunt:
+    -> solve1, ce primeste ca parametru un vector de grade interne pentru fiecare nod din graf si intoarce sortarea lui topologica respectand dependentele de mai sus.
+       Consider 2 cozi(una pentru nodurile cu cod 1 si una pentru nodurile cu cod 2) si pentru fiecare nod intern de grad 0, il adaug in coada lui, in functie
+       de codul sau. Dupa ce am terminat de adaugat, incep sa adaug in rezultat fiecare nod aflat la inceputul cozii, dupa care decrementez gradele interne al
+       vecinilor nodurilor deja parcurse si le adaug in cele 2 cozi. In momentul in care prima coada s-a golit(cea cu noduri cu codul 1), trec la urmatoarea si
+       repet rationamentul si pentru aceasta.
+    -> solve2, ce face acelasi lucru ca functia descrisa anterior, dar de data aceasta incepem cu nodurile cu codul 2.
+    -> getResult, ce rezolva problema descrisa de enunt. In aceasta functie doar consider codurile obtinute in urma sortarii topologice pentru fiecare caz si numar
+       intr-un "for" de cate ori se produce "context switch" in fiecare caz(se produce "context switch" cand elementul de pe pozitia anterioara e diferit de cel de
+       pe pozitia curenta in vectorul de coduri obtinut). La final se verifica daca fie ambele contoruri sunt strict mai mari decat 1, caz in care se ia minimul dintre
+       (count1 - 1, count2 - 1), fie doar unul este strict mai mare decat 1, caz in care luam contorul respectiv, din care scadem 1(scad 1 deoarece fiecare contor va
+       fi cu 1 mai mare decat valoarea lua efectiva, deoarece vectorul de coduri de dupa sortarea topologica va avea la final un "0", ce se va numara si el la context
+       switch).
+Ca si complexitate temporala in cadrul acestei probleme obtinem O(n + m), deoarece sortarea topologica viziteaza toate nodurile si trece prin toate muchiile o singura data, iar
+calculele finale, prin care este determinat rezultatul, sunt de asemenea realizate tot in O(n).
+
+
+
+Problema2: Ferate
+Ideea de rezolvare a problemei mi-a fost impartasita(conceptual) de catre un coleg din grupa(nu toata ideea, doar faptul ca pot sa lucrez dupa ce determin componentele tari conexe,
+cu graful transpus, deoarece se fac mult mai usor verificarile necesare pentru determinarea numarului de cai ferate).
+Problema cere determinarea numarului de muchii ce trebuiesc adaugate grafului pentru a se putea ajunge de la nodul sursa(dat la intrare) la oricare alt nod din graf.
+Avand in vedere ca graful poate contine mai multe componente conexe, m-am gandit in prima faza sa determin toate componente tari conexe ale grafului, folosind codul pus la dispozitie
+de echipa de PA pentru algoritmul lui Kosaraju. O data determinate toate componentele tari conexe ale grafului, mi s-a parut destul de evident ca numarul de muchii ce trebuiesc
+adaugate pentru a se putea ajunge de la nodul sursa la oricare alt nod din graf, e acelasi cu numarul de muchii ce trebuiesc trasate de la nodul sursa la oricare alta componenta tare
+conexa izolata din graful nostru(muchiile pot fi trasate si din alte parti, dar cel mai usor e sa ne imaginam ca ele sunt trasate de la nodul sursa). Prin componenta tare conexa
+izolata ma refer la o componenta tare conexa din care nu iese nicio muchie spre alt nod. Mi s-a parut evident sa fac asta, deoarece era acelasi lucru sa trasez o muchie catre o
+componenta tare conexa ce contine vecini in lista sa de adiacenta, fara a mai trasa spre nodul izolat in care duce, sau in care duce unul din vecinii din lista sa de adiacenta, dar
+astfel e mai usor de imaginat cum am putea numara fiecare muchie ce trebuie adaugata.
+Implementarea mea consta in urmatoarele functii:
+    -> dfs1, folosita pentru Kosaraju.
+    -> dfs2, folosita pentru Kosaraju.
+    -> kosarajuScc, folosita pentru determinarea tuturor componentelor tari conexe ale grafului.
+    -> isNotConnected, ce verifica petru o anumita componenta conexa a unui graf, daca exista vreun nod al componentei din care sa plece o muchie catre un nod exterior(adica un nod
+       ce nu apartine componentei tari conexe).
+    -> getResult, functie ce rezolva problema. Generez toate componentele tari conexe ale grafului, dupa care, pentru fiecare componenta conexa a grafului exista urmatoarele 2 cazuri:
+        1. Componenta tare conexa a pasului curent are dimensiune 1 si este izolata(daca nu ar fi izolata nu ne-ar interesa cazul respectiv, deoarece am stabilit de la inceput ca ne
+           intereseaza doar componentele izolate), caz in care incrementam contorul considerat initial. In cazul in care exista o componenta tare conexa ce contine doar nodul sursa,
+           atunci trebuie sa decrementam rezultatul(lucru ce se intampla o singura data), deoarece nu putem numara si nodul sursa ca si componenta izolata, pentru ca nu are rost sa
+           tragem muchie la el insusi.
+        2. Componenta tare conexa a pasului curent are dimensiune mai mare decat 1, caz in care verificam daca aceasta este si izolata(cu ajutorul functiei "isNotConnected"), dupa
+           care vom incrementa rezultatul. Daca se intampla sa apartina nodul sursa acestei componente conexe, din nou vom decrementa rezultatul deoarece nu are rost sa numaram
+           componenta respectiva de vreme ce exista deja muchie in ea de la nodul sursa la oricare altul.
+Ca si complexitate temporala, trebuie sa analizam pentru fiecare functie in parte cat obtinem:
+    -> functia "kosarajuScc" genereaza o complexitate de O(n + m) maxim;
+    -> functia "isNotConnected" genereaza in cel mai rau caz o complexitate de O(n), deoarece componenta tare conexa primita ca parametru poate avea muchii catre toate celelalte
+       noduri din graf, lucru ce face ca iteratiile sa fie egale cu numarul nodurilor grafului.
+    -> functia "getResult" genereaza o complexitate de O(m + n + n^2) in cel mai defavorabil caz, datorita apelului functiei "kosarajuScc" si a apelului de "n" ori a functiei
+       "isNotConnected".
+In total, complexitatea temporala va fi O(m + n + n^2).
+
+
+Problema3: Teleportare
+Pentru "rezolvarea" acestei probleme am aplicat algoritmul lui Dijkstra preluat din laboratul de PA si am intors distanta de la nodul 1 la nodul "n".
+
+
+Problema4: Magazin
+Pentru rezolvarea acestei probleme am folosit parcurgerea "DFS" cu timpi de prelucrare a nodurilor(algoritmul pentru acesta l-am preluat din cursul 6 de PA al seriei CC)
+si scheletul din tema anterioara, respectiv putin schelet din laborator.
+Problema cere in fapt sa se realizeze o parcurgere "DFS" pe graful de depozite descris de cerinta si sa se determine pentru anumite intrebari de forma "nod_de_start pasi"
+daca se poate ajunge dupa un numar de pasi(dintr-un nod obtinut din "DFS", plecand de la nodul de start descris de intrebare) intr-un alt depozit deja existent in parcuergerea
+anterioara, caz in care determinam depozitul dupa numarul de pasi respecivi.
+Prima oara pentru implementare am utilizat pentru fiecare sir primit ca input cate un "ArrayList<>", iar pentru determinarea anumitor componente din "DFS" foloseam un
+"LinkedHashMap" pentru a putea retine corespondenta "nod, index_nod", lucruri ce produceau pentru jumatate din teste "TLE", asa ca am abordat o alta implementare strict cu
+vectori.
+Am considerat un vector "stack" de dimensiune "size"(pe care o voi incrementa in momentul parcurgerii), in care voi retine elementele obtinute in urma "DFS"-ului, un vector
+de depozite(de dimensiune "n - 1"), in care retin fiecare depozit din care pleaca nodurile aflate pe index-ul cumva urmator fata de pozitia in acest vector(pentru 1 1 3 3 5,
+din 1 pleaca 2, din 1 pleaca 3, din 3 pleaca 4, din 3 pleaca 5 si din 5 pleaca 6), o matrice de intrebari(de dimensiune "q x 2") in care retin fiecare intrebare descrisa de
+problema si 3 vectori pe care ii folsesc la parcurgerea "DFS": un vector de culori pentru fiecare nod(nod neprelucrat -> 1, nod in prelucrare -> 0, nod prelucrat -> -1),
+un vector cu timpii de inceput a prelucrarii fiecarui nod in parte si un vector cu timpii de finalizare pentru prelucrarea fiecarui nod in parte.
+Functiile folosite in implementare sunt:
+    -> "createGraph", care primeste ca parametru vectorul de depozite descris anterior si intoarce un graf reprezentat prin liste de adiacenta(cel descris de problema).
+    -> "explore", functie ajutatoare pentru "DFS", in care incepem prelucrarea fiecarui nod in parte(cu conditia ca el nu a mai fost prelucrat pana acum), calculam timpii
+        de inceput si final pentru fiecare nod continut de graf si adaugam in vectorul "stack" fiecare rezultat in parte. Functia este apelata recursiv pentru fiecare nod din
+        lista de adiacenta a nodului ce se afla in prelucrare.
+    -> "dfs", in care atribuim initial fiecarui nod valoarea "1"(adica niciunul nu a fost prelucrat sau nu se afla in prelucrare), dupa care apelam "explore" pe fiecare nod al
+        grafului.
+    -> "getResult", care este functia ce rezolva problema descrisa. Imi creez graful, consider un vector in care voi stoca corespondenta "nod_din_dfs pozitia_lui_in_dfs"(la
+        index-ul "nod" se afla index-ul nodului din "DFS"), determin intr-un alt vector index-ul fiecarui nod din "DFS", dupa care incep sa raspund la fiecare intrebare in parte.
+        Pentru a raspunde, caut "index-ul" depozitului aflat la "steps" pozitii fata de index-ul depozitului din care se pleaca(cel din intrebare), dupa care verific daca acesta
+        este in intervalul [1, n - 1] (altfel ar fi in afara dfs-ului si in vectorul de solutii pun -1), caz in care mai trebuia verificat daca exista drum de la depozitul din
+        intrebare pana la cel tocmai determinat(in caz contrar punem -1 in vectorul de solutii). Pentru a verifica ultima afirmatie, am observat(privind un exemplu) ca exista
+        drum intre 2 noduri in graf, daca timpul de finalizare al nodului de "start" este mai mare decat cel al nodului la care ajungem(prelucrarea se termina dupa cea a nodului
+        destinatie), iar timpul de inceput al nodului de"start" este mai mic decat cel al nodului la care ajungem(prelucrarea incepe inaintea nodului destinatie).
+Ca si complexitate temporala, vom avea O(q + n), datorita intrebarilor la care vom incerca sa raspundem in timp constant si dfs-ului ce depinde de functia "explore", ce va parcurge
+toate nodurile o singura data si le va insemna ca fiind vizitate, pentru a nu ne mai intoarce sa facem alte calcule inutile si repetitive.
+
+REFERINTE:
+Dupa cum deja am mentionat mai sus, unii algoritmi sunt preluati din laborator/curs si modificati sau nemodificati, in functie de nevoie, iar ideea de a folosii graful transpus la
+cea de-a doua problema mi-a fost oferita de un coleg, pentru a usura anumite verificari.
